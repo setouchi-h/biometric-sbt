@@ -34,7 +34,7 @@ contract StoreBiometricSbt {
         s_tokenCounter += 1;
     }
 
-    function compare(uint256 _biometricInfo) internal view returns (bool) {
+    function compare(uint256 _biometricInfo) public view returns (bool) {
         address _msgSender = msg.sender;
         if (s_addressToSbt[_msgSender].id == 0) {
             revert SBT__NotMinted();
