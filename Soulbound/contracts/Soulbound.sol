@@ -9,15 +9,14 @@ error SBT__NotTransferable();
 error ERC721Metadata__URI_QueryFor_NonExistentToken();
 
 abstract contract Soulbound is ERC721, StoreBiometricSbt {
-
     uint256 private s_sbtName;
 
     constructor() ERC721("BiometricSBT", "BSBT") {}
 
-    function mintSBT(uint256 _biometricInformation) public {
+    function mintSBT(uint256 _biometricInfo) public {
         address _msgSender = msg.sender;
-        super.store(_biometricInformation, _msgSender);
-        (uint256 id,,) = super.getSbt(_msgSender);
+        super.store(_biometricInfo, _msgSender);
+        (uint256 id, , ) = super.getSbtFromAddress(_msgSender);
         _safeMint(_msgSender, id);
     }
 
@@ -25,7 +24,7 @@ abstract contract Soulbound is ERC721, StoreBiometricSbt {
         if (!_exists(tokenId)) {
             revert ERC721Metadata__URI_QueryFor_NonExistentToken();
         }
-        (uint256 id,,) = super.getSbt(_msgSender);
+        (uint256 id, uint256 hashValue, ) = super.getSbtFromId(tokenId);
         return
             string(
                 abi.encodePacked(
@@ -33,14 +32,14 @@ abstract contract Soulbound is ERC721, StoreBiometricSbt {
                     Base64.encode(
                         bytes(
                             abi.encodePacked(
-                                '{"name":"',
+                                '{"name":" ',
                                 name(),
                                 '", "description":"An biometric SBT", ',
                                 '"attributes": [{"BSBT": ',
-                                super.getSbtHashValue(_msgSender),
+                                hashValue,
                                 '"id": ',
-                                super.getSbtId(_msgSender),
-                                '}], "image":""}'
+                                id,
+                                '}], "image": "ipfs://bafybeibgklnn4qp7wlmgqktwxvr3jjh3wgit2cgsh4mq25mtxpwcq7nm44"}'
                             )
                         )
                     )
