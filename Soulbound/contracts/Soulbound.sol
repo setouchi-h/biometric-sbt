@@ -8,8 +8,7 @@ import "./StoreBiometricSbt.sol";
 error SBT__NotTransferable();
 error ERC721Metadata__URI_QueryFor_NonExistentToken();
 
-abstract contract Soulbound is ERC721, StoreBiometricSbt {
-    uint256 private s_sbtName;
+contract Soulbound is ERC721, StoreBiometricSbt {
 
     constructor() ERC721("BiometricSBT", "BSBT") {}
 
@@ -34,7 +33,7 @@ abstract contract Soulbound is ERC721, StoreBiometricSbt {
                             abi.encodePacked(
                                 '{"name":" ',
                                 name(),
-                                '", "description":"An biometric SBT", ',
+                                '", "description": "An biometric SBT", ',
                                 '"attributes": [{"BSBT": ',
                                 hashValue,
                                 '"id": ',

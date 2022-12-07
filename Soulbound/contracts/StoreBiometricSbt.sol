@@ -58,4 +58,8 @@ contract StoreBiometricSbt {
     function getSbtFromId(uint256 _id) public view returns (uint256, uint256, address) {
         return (s_idToSbt[_id].id, s_idToSbt[_id].hashValue, s_idToSbt[_id].ownerAddress);
     }
+
+    function getTokenCounter() public view returns (uint256) {
+        return s_tokenCounter;
+    }
 }
