@@ -6,28 +6,29 @@ error SBT__NotMinted();
 
 contract StoreBiometricSbt {
 
-    uint256 private s_tokenCounter;
     struct SBT {
         uint256 id;
         uint256 hashValue;
-        address sbtAddress;
+        address ownerAddress;
     }
+
+    uint256 private s_tokenCounter;
     mapping(address => SBT) private s_addressToSbt;
-
+    mapping(uint256 => SBT) private s_idToSbt;
     event CreatedSBT(uint256 indexed tokenId);
-
     SBT[] private s_sbt;
 
     constructor() {
         s_tokenCounter = 1;
     }
 
-    function store(uint256 _biometricInformation) public {
-        address _msgSender = msg.sender;
-        if (s_addressToSbt[_msgSender].id != 0) {
+    function store(uint256 _biometricInformation, address _address) public {
+        if (s_addressToSbt[_address].id != 0) {
             revert SBT__AlreadyMinted();
         }
-        s_sbt.push(SBT(s_tokenCounter, hashing(_biometricInformation, _msgSender), _msgSender));
+        SBT memory _sbt = SBT(s_tokenCounter, hashing(_biometricInformation, _address), _address);
+        s_sbt.push(_sbt);
+        s_addressToSbt[_address] = _sbt;
         emit CreatedSBT(s_tokenCounter);
         s_tokenCounter += 1;
     }
@@ -49,7 +50,7 @@ contract StoreBiometricSbt {
         return uint(keccak256(abi.encodePacked(_biometricInformation, _address)));
     }
 
-    function getSbt(address _address) public view returns (SBT memory) {
-        return s_addressToSbt[_address];
+    function getSbt(address _address) public view returns (uint256, uint256, address) {
+        return (s_addressToSbt[_address].id, s_addressToSbt[_address].hashValue, s_addressToSbt[_address].ownerAddress);
     }
 }

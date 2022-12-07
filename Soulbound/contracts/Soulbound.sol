@@ -3,37 +3,29 @@ pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "base64-sol/base64.sol";
+import "./StoreBiometricSbt.sol";
 
 error SBT__NotTransferable();
-error SBT__AlreadyMinted();
 error ERC721Metadata__URI_QueryFor_NonExistentToken();
 
-abstract contract Soulbound is ERC721 {
+abstract contract Soulbound is ERC721, StoreBiometricSbt {
 
-    uint256 private s_tokenCounter;
     uint256 private s_sbtName;
-    mapping(address => uint256) private s_tokenMinted;
 
-    event CreatedSBT(uint256 indexed tokenId);
+    constructor() ERC721("BiometricSBT", "BSBT") {}
 
-    constructor() ERC721("BiometricSBT", "BSBT") {
-        s_tokenCounter = 1;
-    }
-
-    function mintSBT() public {
-        if (s_tokenMinted[msg.sender] != 0) {
-            revert SBT__AlreadyMinted();
-        }
-        _safeMint(msg.sender, s_tokenCounter);
-        s_tokenMinted[msg.sender] = s_tokenCounter;
-        emit CreatedSBT(s_tokenCounter);
-        s_tokenCounter += 1;
+    function mintSBT(uint256 _biometricInformation) public {
+        address _msgSender = msg.sender;
+        super.store(_biometricInformation, _msgSender);
+        (uint256 id,,) = super.getSbt(_msgSender);
+        _safeMint(_msgSender, id);
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         if (!_exists(tokenId)) {
             revert ERC721Metadata__URI_QueryFor_NonExistentToken();
         }
+        (uint256 id,,) = super.getSbt(_msgSender);
         return
             string(
                 abi.encodePacked(
@@ -42,10 +34,13 @@ abstract contract Soulbound is ERC721 {
                         bytes(
                             abi.encodePacked(
                                 '{"name":"',
-                                name(), // You can add whatever name here
+                                name(),
                                 '", "description":"An biometric SBT", ',
-                                '"attributes": [{"trait_type": "coolness", "value": 100}], "image":"',
-                                '"}'
+                                '"attributes": [{"BSBT": ',
+                                super.getSbtHashValue(_msgSender),
+                                '"id": ',
+                                super.getSbtId(_msgSender),
+                                '}], "image":""}'
                             )
                         )
                     )
