@@ -9,7 +9,6 @@ error SBT__NotTransferable();
 error ERC721Metadata__URI_QueryFor_NonExistentToken();
 
 contract Soulbound is ERC721, StoreBiometricSbt {
-
     constructor() ERC721("BiometricSBT", "BSBT") {}
 
     function mintSBT(uint256 _biometricInfo) public {
@@ -19,38 +18,35 @@ contract Soulbound is ERC721, StoreBiometricSbt {
         _safeMint(_msgSender, id);
     }
 
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        if (!_exists(tokenId)) {
-            revert ERC721Metadata__URI_QueryFor_NonExistentToken();
-        }
-        (uint256 id, uint256 hashValue, ) = super.getSbtFromId(tokenId);
-        return
-            string(
-                abi.encodePacked(
-                    _baseURI(),
-                    Base64.encode(
-                        bytes(
-                            abi.encodePacked(
-                                '{"name": "BiometricSBT ID:',
-                                id,
-                                '",',
-                                '"description": "An biometric SBT", ',
-                                '"attributes": [{"id": ',
-                                id,
-                                '"hashValue": ',
-                                hashValue,
-                                '}], "image": "ipfs://bafybeibgklnn4qp7wlmgqktwxvr3jjh3wgit2cgsh4mq25mtxpwcq7nm44/biometric%20card%202.jpeg"}'
-                            )
-                        )
-                    )
-                )
-            );
+    function _baseURI() internal pure override returns (string memory) {
+        return "data:application/json;base64,";
     }
 
-    function burnSBT(uint256 tokenId) public {
-        super.burn(tokenId, msg.sender);
-        _burn(tokenId);
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        (uint256 id, uint256 hashValue, ) = super.getSbtFromId(tokenId);
+        string memory json = Base64.encode(
+            bytes(
+                string(
+                    abi.encodePacked(
+                        '{"name": "BiometricSBT",',
+                        '"description": "An biometric SBT", ',
+                        '"attributes": [{"id": ',
+                        Strings.toString(id),
+                        ', "hashValue": ',
+                        Strings.toString(hashValue),
+                        '}], "image": "ipfs://bafybeibgklnn4qp7wlmgqktwxvr3jjh3wgit2cgsh4mq25mtxpwcq7nm44/biometric%20card%202.jpeg"}'
+                    )
+                )
+            )
+        );
+        string memory output = string(abi.encodePacked("data:application/json;base64,", json));
+        return output;
     }
+
+    // function burnSBT(uint256 tokenId) public {
+    //     super.burn(tokenId, msg.sender);
+    //     _burn(tokenId);
+    // }
 
     // Non transferable
 

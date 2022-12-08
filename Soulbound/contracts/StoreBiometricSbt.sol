@@ -47,18 +47,18 @@ contract StoreBiometricSbt {
         }
     }
 
-    function burn(uint256 _tokenId, address _address) internal {
-        if (s_idToSbt[_tokenId].ownerAddress != _address) {
-            revert SBT__Unauthorized();
-        }
-        if (s_idToSbt[_tokenId].id == 0) {
-            revert SBT__NotMinted();
-        }
-        SBT memory _nullSbt = SBT(0, 0, address(0));
-        s_addressToSbt[_address] = _nullSbt;
-        s_idToSbt[_tokenId] = _nullSbt;
-        emit BurnedSBT(_tokenId);
-    }
+    // function burn(uint256 _tokenId, address _address) internal {
+    //     if (s_idToSbt[_tokenId].ownerAddress != _address) {
+    //         revert SBT__Unauthorized();
+    //     }
+    //     if (s_idToSbt[_tokenId].id == 0) {
+    //         revert SBT__NotMinted();
+    //     }
+    //     SBT memory _nullSbt = SBT(0, 0, address(0));
+    //     s_addressToSbt[_address] = _nullSbt;
+    //     s_idToSbt[_tokenId] = _nullSbt;
+    //     emit BurnedSBT(_tokenId);
+    // }
 
     function hashing(uint256 _biometricInfo, address _address) private pure returns (uint256) {
         return uint(keccak256(abi.encodePacked(_biometricInfo, _address)));

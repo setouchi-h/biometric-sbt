@@ -8,7 +8,7 @@ module.exports = async function({ getNamedAccounts, deployments }) {
 
     log("----------------------------------------------")
     const args = []
-    const Soulbound = await deploy("Soulbound", {
+    const soulbound = await deploy("Soulbound", {
         from: deployer,
         args,
         log: true,
@@ -17,7 +17,7 @@ module.exports = async function({ getNamedAccounts, deployments }) {
 
     if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
         log("Verifying...")
-        await verify(Soulbound.address, args)
+        await verify(soulbound.address, args)
     }
     log("----------------------------------------------")
 }
