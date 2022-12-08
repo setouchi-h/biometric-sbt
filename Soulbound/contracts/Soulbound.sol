@@ -31,17 +31,25 @@ contract Soulbound is ERC721, StoreBiometricSbt {
                     Base64.encode(
                         bytes(
                             abi.encodePacked(
-                                '{"name": "BiometricSBT", "description": "An biometric SBT", ',
-                                '"attributes": [{"BSBT": ',
-                                hashValue,
-                                '"id": ',
+                                '{"name": "BiometricSBT ID:',
                                 id,
-                                '}], "image": "ipfs://bafybeibgklnn4qp7wlmgqktwxvr3jjh3wgit2cgsh4mq25mtxpwcq7nm44"}'
+                                '",',
+                                '"description": "An biometric SBT", ',
+                                '"attributes": [{"id": ',
+                                id,
+                                '"hashValue": ',
+                                hashValue,
+                                '}], "image": "ipfs://bafybeibgklnn4qp7wlmgqktwxvr3jjh3wgit2cgsh4mq25mtxpwcq7nm44/biometric%20card%202.jpeg"}'
                             )
                         )
                     )
                 )
             );
+    }
+
+    function burnSBT(uint256 tokenId) public {
+        super.burn(tokenId, msg.sender);
+        _burn(tokenId);
     }
 
     // Non transferable
